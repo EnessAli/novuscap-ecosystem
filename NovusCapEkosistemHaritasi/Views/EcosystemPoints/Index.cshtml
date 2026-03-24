@@ -1,0 +1,119 @@
+@model IEnumerable<NovusCapEkosistemHaritasi.Models.EcosystemPoint>
+@{
+    ViewData["Title"] = "Ekosistem Noktaları";
+}
+
+<div class="bg-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Ekosistem Noktaları</h1>
+                <p class="text-gray-600">Teknoloji ve eğitim ekosistemindeki tüm noktalar</p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <a href="@Url.Action("Create")" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                    <i class="fas fa-plus mr-2"></i> Yeni Ekle
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-8">
+            <form method="get" class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <label for="searchTerm" class="block text-sm font-medium text-gray-700 mb-1">Arama</label>
+                    <input type="text" id="searchTerm" name="searchTerm" value="@ViewData["SearchTerm"]" 
+                           placeholder="İsim, açıklama veya adres ile ara..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="w-full md:w-64">
+                    <label for="categoryId" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                    <select id="categoryId" name="categoryId" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tüm Kategoriler</option>
+                        @foreach (var item in ViewBag.Categories)
+                        {
+                            <option value="@item.Value" selected="@((ViewData["CategoryId"] != null && ViewData["CategoryId"].ToString() == item.Value) ? "selected" : "")">
+                                @item.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-search mr-2"></i> Ara
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        @if (!Model.Any())
+        {
+            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 mb-8">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-yellow-500 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-lg font-medium">Sonuç bulunamadı</h3>
+                        <p class="mt-1">Arama kriterlerinize uygun ekosistem noktası bulunamadı. Lütfen farklı bir arama terimi deneyin veya filtreleri temizleyin.</p>
+                    </div>
+                </div>
+            </div>
+        }
+        
+        <!-- Results -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var item in Model)
+            {
+                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                        <i class="@(string.IsNullOrEmpty(item.Icon) ? "fas fa-map-marker-alt" : item.Icon) text-4xl text-gray-400"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h2 class="text-xl font-semibold text-gray-800">@item.Name</h2>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">@item.Category?.Name</span>
+                        </div>
+                        <p class="text-gray-600 mb-4 line-clamp-3">@item.Description</p>
+                        <div class="flex items-center text-gray-500 mb-4">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>@item.City, @item.District</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <a href="@Url.Action("Details", new { id = item.Id })" class="text-blue-600 hover:text-blue-800 font-medium">
+                                Detaylar <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                            <div class="flex space-x-2">
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="text-gray-500 hover:text-blue-600">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="@Url.Action("Delete", new { id = item.Id })" class="text-gray-500 hover:text-red-600">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        
+        <!-- Map Link -->
+        <div class="mt-8 text-center">
+            <a href="@Url.Action("Map")" class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                <i class="fas fa-map-marked-alt mr-2"></i> Haritada Görüntüle
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+} 

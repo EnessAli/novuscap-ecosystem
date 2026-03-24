@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NovusCap Ekosistem Haritası</title>
+    <meta name="description" content="@ViewData["MetaDescription"]" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="h-full bg-gray-50 flex flex-col">
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a class="flex items-center text-xl font-bold" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="mr-2">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </span>
+                    NovusCap Ekosistem Haritası
+                </a>
+                <button class="md:hidden focus:outline-none" type="button" id="mobile-menu-button">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <nav class="hidden md:flex space-x-6">
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="EcosystemPoints" asp-action="Index">Ekosistem Noktaları</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="EcosystemPoints" asp-action="Map">Harita</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="Home" asp-action="About">Hakkında</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="Home" asp-action="Contact">İletişim</a>
+                </nav>
+            </div>
+            <nav class="hidden pb-4" id="mobile-menu">
+                <div class="flex flex-col space-y-3">
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="EcosystemPoints" asp-action="Index">Ekosistem Noktaları</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="EcosystemPoints" asp-action="Map">Harita</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="Home" asp-action="About">Hakkında</a>
+                    <a class="hover:text-blue-200 transition-colors" asp-area="" asp-controller="Home" asp-action="Contact">İletişim</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">NovusCap Ekosistem Haritası</h3>
+                    <p class="text-gray-300">Türkiye'deki teknoloji ve eğitim ekosistemini haritalandıran platform</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Hızlı Bağlantılar</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a class="hover:text-blue-300 transition-colors" asp-controller="Home" asp-action="Index">Ana Sayfa</a></li>
+                        <li><a class="hover:text-blue-300 transition-colors" asp-controller="EcosystemPoints" asp-action="Map">Ekosistem Haritası</a></li>
+                        <li><a class="hover:text-blue-300 transition-colors" asp-controller="Home" asp-action="About">Hakkımızda</a></li>
+                        <li><a class="hover:text-blue-300 transition-colors" asp-controller="Home" asp-action="Contact">İletişim</a></li>
+                        <li><a class="hover:text-blue-300 transition-colors" asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Bize Ulaşın</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope w-6"></i>
+                            <span>info@novuscap.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone w-6"></i>
+                            <span>+90 212 123 4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt w-6"></i>
+                            <span>İstanbul, Türkiye</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-blue-300 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-blue-300 transition-colors">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-blue-300 transition-colors">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-blue-300 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-700 text-center text-gray-400">
+                &copy; @DateTime.Now.Year - NovusCap Ekosistem Haritası - Tüm hakları saklıdır.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html> 

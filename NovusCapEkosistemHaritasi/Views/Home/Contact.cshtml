@@ -1,0 +1,147 @@
+@model NovusCapEkosistemHaritasi.Models.ContactMessage
+@{
+    ViewData["Title"] = ViewData["Title"] ?? "İletişim";
+    ViewData["Subtitle"] = ViewData["Subtitle"] ?? "Bizimle İletişime Geçin";
+}
+
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">@ViewData["Title"]</h1>
+            <p class="text-xl">@ViewData["Subtitle"]</p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Mesaj Gönderin</h2>
+                    
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium">@TempData["SuccessMessage"]</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                    <form asp-action="Contact" method="post" class="space-y-6">
+                        <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4"></div>
+                        
+                        <div>
+                            <label asp-for="Name" class="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
+                            <input asp-for="Name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Adınız Soyadınız">
+                            <span asp-validation-for="Name" class="text-sm text-red-600"></span>
+                        </div>
+                        
+                        <div>
+                            <label asp-for="Email" class="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
+                            <input asp-for="Email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ornek@email.com">
+                            <span asp-validation-for="Email" class="text-sm text-red-600"></span>
+                        </div>
+                        
+                        <div>
+                            <label asp-for="Phone" class="block text-sm font-medium text-gray-700 mb-1">Telefon (İsteğe Bağlı)</label>
+                            <input asp-for="Phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0555 555 55 55">
+                            <span asp-validation-for="Phone" class="text-sm text-red-600"></span>
+                        </div>
+                        
+                        <div>
+                            <label asp-for="Subject" class="block text-sm font-medium text-gray-700 mb-1">Konu</label>
+                            <input asp-for="Subject" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mesaj konusu">
+                            <span asp-validation-for="Subject" class="text-sm text-red-600"></span>
+                        </div>
+                        
+                        <div>
+                            <label asp-for="Message" class="block text-sm font-medium text-gray-700 mb-1">Mesaj</label>
+                            <textarea asp-for="Message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Mesajınızı buraya yazın..."></textarea>
+                            <span asp-validation-for="Message" class="text-sm text-red-600"></span>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+                                <i class="fas fa-paper-plane mr-2"></i> Mesaj Gönder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Contact Info -->
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">İletişim Bilgileri</h2>
+                    
+                    @if (ViewBag.PageContent != null)
+                    {
+                        <div class="prose max-w-none mb-8">
+                            @Html.Raw(ViewBag.PageContent.Content)
+                        </div>
+                    }
+                    
+                    <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="fas fa-envelope text-blue-600 w-5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-500">E-posta</h3>
+                                    <p class="text-gray-800">info@novuscap.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="fas fa-phone text-blue-600 w-5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-500">Telefon</h3>
+                                    <p class="text-gray-800">+90 212 123 4567</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="fas fa-map-marker-alt text-blue-600 w-5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-500">Adres</h3>
+                                    <p class="text-gray-800">İstanbul, Türkiye</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Bizi Takip Edin</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-500 hover:text-blue-600 text-2xl transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-blue-600 text-2xl transition-colors">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-blue-600 text-2xl transition-colors">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-blue-600 text-2xl transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

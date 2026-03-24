@@ -1,0 +1,164 @@
+@model NovusCapEkosistemHaritasi.Models.EcosystemPoint
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="bg-white py-8">
+    <div class="container mx-auto px-4">
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="@Url.Action("Index", "Home")" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-home mr-2"></i> Ana Sayfa
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="@Url.Action("Index", "EcosystemPoints")" class="text-gray-700 hover:text-blue-600">
+                            Ekosistem Noktaları
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500">@Model.Name</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="h-64 bg-gray-200 flex items-center justify-center">
+                        <i class="@(string.IsNullOrEmpty(Model.Icon) ? "fas fa-map-marker-alt" : Model.Icon) text-6xl text-gray-400"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h1 class="text-3xl font-bold text-gray-800">@Model.Name</h1>
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                @Model.Category?.Name
+                            </span>
+                        </div>
+                        
+                        <div class="prose max-w-none mb-6">
+                            <p>@Model.Description</p>
+                        </div>
+                        
+                        <div class="border-t border-gray-200 pt-6 space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="fas fa-map-marker-alt text-blue-600 w-5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-500">Adres</h3>
+                                    <p class="text-gray-800">@Model.Address</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0 mt-1">
+                                    <i class="fas fa-city text-blue-600 w-5"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-500">Şehir / İlçe</h3>
+                                    <p class="text-gray-800">@Model.City, @Model.District</p>
+                                </div>
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(Model.Website))
+                            {
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 mt-1">
+                                        <i class="fas fa-globe text-blue-600 w-5"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-gray-500">Web Sitesi</h3>
+                                        <a href="@Model.Website" target="_blank" class="text-blue-600 hover:text-blue-800 break-all">
+                                            @Model.Website
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="mt-8 flex space-x-4">
+                            <a href="@Url.Action("Edit", new { id = Model.Id })" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-edit mr-2"></i> Düzenle
+                            </a>
+                            <a href="@Url.Action("Delete", new { id = Model.Id })" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-trash mr-2"></i> Sil
+                            </a>
+                            <a href="@Url.Action("Index")" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i> Listeye Dön
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Konum</h2>
+                        <div id="map" class="h-64 w-full rounded-lg mb-4"></div>
+                        <a href="https://www.google.com/maps/search/?api=1&query=@Model.Latitude,@Model.Longitude" 
+                           target="_blank" 
+                           class="bg-green-600 hover:bg-green-700 text-white w-full py-2 rounded-lg inline-flex items-center justify-center transition-colors">
+                            <i class="fas fa-directions mr-2"></i> Yol Tarifi Al
+                        </a>
+                    </div>
+                </div>
+                
+                @if (Model.Category != null)
+                {
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h2 class="text-xl font-semibold text-gray-800 mb-4">Kategori Bilgileri</h2>
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                                    <i class="@(string.IsNullOrEmpty(Model.Category.Icon) ? "fas fa-folder" : Model.Category.Icon) text-2xl"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="font-medium text-gray-800">@Model.Category.Name</h3>
+                                    <p class="text-gray-600 text-sm">@Model.Category.Description</p>
+                                </div>
+                            </div>
+                            <a href="@Url.Action("Index", new { categoryId = Model.CategoryId })" class="text-blue-600 hover:text-blue-800 inline-flex items-center">
+                                <span>Bu kategorideki diğer noktaları görüntüle</span>
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@(Context.Request.Host.Value.Contains("localhost") ? "AIzaSyDefReplaceMeWithYourDevKey" : Configuration["GoogleMaps:ApiKey"])&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            const location = { lat: @Model.Latitude, lng: @Model.Longitude };
+            
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: location,
+                zoom: 15,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false
+            });
+            
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "@Model.Name"
+            });
+        }
+    </script>
+} 

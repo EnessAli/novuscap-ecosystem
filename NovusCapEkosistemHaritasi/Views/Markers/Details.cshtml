@@ -1,0 +1,96 @@
+@model NovusCapEkosistemHaritasi.Models.MarkerModel
+
+@{
+    ViewData["Title"] = "Detaylar";
+}
+
+<script>
+    @if (Model != null && Model.Id > 0) {
+        @:window.location.href = '/EcosystemPoints/Details/@Model.Id';
+    } else {
+        @:window.location.href = '/EcosystemPoints/Index';
+    }
+</script>
+
+<div class="container mt-4">
+    <h1>Yönlendiriliyor...</h1>
+    <p>Sayfaya yönlendiriliyorsunuz. Lütfen bekleyin...</p>
+</div>
+
+<div class="container mt-4">
+    <h1>Ekosistem Noktası Detayları</h1>
+    <hr />
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h4 mb-0">@Model.Name</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-4">Kategori</dt>
+                        <dd class="col-sm-8">@Model.Category</dd>
+
+                        <dt class="col-sm-4">Açıklama</dt>
+                        <dd class="col-sm-8">@Model.Description</dd>
+
+                        <dt class="col-sm-4">Website</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.Website))
+                            {
+                                <a href="@Model.Website" target="_blank">@Model.Website</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Belirtilmemiş</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Adres</dt>
+                        <dd class="col-sm-8">@Model.Address</dd>
+
+                        <dt class="col-sm-4">Şehir</dt>
+                        <dd class="col-sm-8">@Model.City</dd>
+
+                        <dt class="col-sm-4">Konum</dt>
+                        <dd class="col-sm-8">@Model.Latitude, @Model.Longitude</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <div id="map" style="height: 300px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+            <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@(ViewData["GoogleMapsApiKey"] ?? "")" async defer></script>
+    <script>
+        function initMap() {
+            const lat = @Model.Latitude;
+            const lng = @Model.Longitude;
+            const location = { lat: lat, lng: lng };
+            
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: location,
+            });
+            
+            const marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "@Model.Name"
+            });
+        }
+
+        window.onload = function() {
+            initMap();
+        };
+    </script>
+} 

@@ -1,0 +1,107 @@
+@model NovusCapEkosistemHaritasi.Models.MarkerModel
+
+@{
+    ViewData["Title"] = "Yeni Nokta Ekle";
+}
+
+<script>
+    window.location.href = '/EcosystemPoints/Create';
+</script>
+
+<div class="container mt-4">
+    <h1>Yönlendiriliyor...</h1>
+    <p>Sayfaya yönlendiriliyorsunuz. Lütfen bekleyin veya <a href="/EcosystemPoints/Create">buraya tıklayın</a></p>
+</div>
+
+<div class="container mt-4">
+    <h1>Yeni Ekosistem Noktası Ekle</h1>
+    <hr />
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Create" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">İsim</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Açıklama</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Website" class="form-label">Website</label>
+                    <input asp-for="Website" class="form-control" placeholder="https://example.com" />
+                    <span asp-validation-for="Website" class="text-danger"></span>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Latitude" class="form-label">Enlem</label>
+                        <input asp-for="Latitude" class="form-control" />
+                        <span asp-validation-for="Latitude" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Longitude" class="form-label">Boylam</label>
+                        <input asp-for="Longitude" class="form-control" />
+                        <span asp-validation-for="Longitude" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Category" class="form-label">Kategori</label>
+                    <select asp-for="Category" class="form-select">
+                        <option value="">Kategori Seçiniz</option>
+                        <option value="@CategoryType.School42">@CategoryType.School42</option>
+                        <option value="@CategoryType.University">@CategoryType.University</option>
+                        <option value="@CategoryType.TechHub">@CategoryType.TechHub</option>
+                        <option value="@CategoryType.EducationCenter">@CategoryType.EducationCenter</option>
+                    </select>
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Icon" class="form-label">İkon</label>
+                    <input asp-for="Icon" class="form-control" />
+                    <span asp-validation-for="Icon" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label">Adres</label>
+                    <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <label asp-for="City" class="form-label">Şehir</label>
+                    <input asp-for="City" class="form-control" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                    <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Bilgi</h5>
+                </div>
+                <div class="card-body">
+                    <p>Ekosistem haritasına yeni bir nokta eklemek için aşağıdaki bilgileri giriniz.</p>
+                    <p>Konum bilgisini (enlem/boylam) Google Maps üzerinden alabilirsiniz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

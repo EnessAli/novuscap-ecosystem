@@ -1,0 +1,104 @@
+@model NovusCapEkosistemHaritasi.Models.EcosystemPoint
+@{
+    ViewData["Title"] = "Ekosistem Noktasını Sil";
+}
+
+<div class="bg-white py-8">
+    <div class="container mx-auto px-4">
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="@Url.Action("Index", "Home")" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-home mr-2"></i> Ana Sayfa
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="@Url.Action("Index", "EcosystemPoints")" class="text-gray-700 hover:text-blue-600">
+                            Ekosistem Noktaları
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500">Sil</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="bg-red-600 text-white px-6 py-4">
+                    <h1 class="text-2xl font-bold">Ekosistem Noktasını Sil</h1>
+                </div>
+                <div class="p-6">
+                    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-lg font-medium">Bu ekosistem noktasını silmek istediğinizden emin misiniz?</h3>
+                                <p class="mt-2">Bu işlem geri alınamaz!</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded-lg mb-6">
+                        <div class="border-b border-gray-200 bg-gray-50 px-6 py-3">
+                            <h2 class="text-lg font-medium text-gray-800">@Model.Name</h2>
+                        </div>
+                        <div class="p-6">
+                            <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+                                <dt class="text-sm font-medium text-gray-500">Kategori</dt>
+                                <dd class="text-sm text-gray-900">@Model.Category?.Name</dd>
+                                
+                                <dt class="text-sm font-medium text-gray-500">Şehir</dt>
+                                <dd class="text-sm text-gray-900">@Model.City</dd>
+                                
+                                <dt class="text-sm font-medium text-gray-500">İlçe</dt>
+                                <dd class="text-sm text-gray-900">@Model.District</dd>
+                                
+                                <dt class="text-sm font-medium text-gray-500">Adres</dt>
+                                <dd class="text-sm text-gray-900">@Model.Address</dd>
+                                
+                                <dt class="text-sm font-medium text-gray-500">Açıklama</dt>
+                                <dd class="text-sm text-gray-900 md:col-span-2">@Model.Description</dd>
+                                
+                                <dt class="text-sm font-medium text-gray-500">Web Sitesi</dt>
+                                <dd class="text-sm text-gray-900 break-all">
+                                    @if (!string.IsNullOrEmpty(Model.Website))
+                                    {
+                                        <a href="@Model.Website" target="_blank" class="text-blue-600 hover:underline">@Model.Website</a>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </dd>
+                                
+                                <dt class="text-sm font-medium text-gray-500">Konum</dt>
+                                <dd class="text-sm text-gray-900">@Model.Latitude, @Model.Longitude</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="flex space-x-4">
+                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-trash mr-2"></i> Sil
+                            </button>
+                            <a href="@Url.Action("Index")" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-times mr-2"></i> İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

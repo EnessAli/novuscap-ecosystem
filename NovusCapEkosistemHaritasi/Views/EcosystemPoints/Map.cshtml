@@ -1,0 +1,404 @@
+@model IEnumerable<NovusCapEkosistemHaritasi.Models.EcosystemPoint>
+@{
+    ViewData["Title"] = "Ekosistem Haritası";
+}
+
+<div class="flex flex-col md:flex-row h-[calc(100vh-64px)]">
+    <!-- Sidebar -->
+    <div class="w-full md:w-80 bg-white shadow-lg z-10 overflow-y-auto">
+        <div class="p-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Filtreler</h2>
+            
+            <!-- Search Box -->
+            <div class="relative mb-4">
+                <input type="text" id="searchInput" placeholder="Ara..." 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button id="searchButton" class="absolute right-3 top-2.5 text-gray-500 hover:text-blue-600">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <!-- Category Filter -->
+            <div class="mb-4">
+                <label for="categoryFilter" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                <select id="categoryFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tüm Kategoriler</option>
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            
+            <!-- City Filter -->
+            <div class="mb-4">
+                <label for="cityFilter" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+                <select id="cityFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tüm Şehirler</option>
+                </select>
+            </div>
+            
+            <!-- District Filter -->
+            <div class="mb-4">
+                <label for="districtFilter" class="block text-sm font-medium text-gray-700 mb-1">İlçe</label>
+                <select id="districtFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tüm İlçeler</option>
+                </select>
+            </div>
+            
+            <!-- Filter Buttons -->
+            <div class="flex space-x-2 mb-6">
+                <button id="applyFiltersBtn" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-filter mr-2"></i> Filtrele
+                </button>
+                <button id="clearFiltersBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-times mr-2"></i> Temizle
+                </button>
+            </div>
+            
+            <!-- Results List -->
+            <h2 class="text-xl font-bold text-gray-800 mb-2 flex justify-between items-center">
+                <span>Sonuçlar</span>
+                <span id="resultsCount" class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">@Model.Count()</span>
+            </h2>
+            
+            <div id="resultsList" class="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                @foreach (var point in Model)
+                {
+                    <div class="result-item bg-gray-50 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors" 
+                         data-id="@point.Id" data-lat="@point.Latitude" data-lng="@point.Longitude">
+                        <h3 class="font-medium text-gray-800">@point.Name</h3>
+                        <div class="flex items-center text-sm text-gray-500 mt-1">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span>@point.City, @point.District</span>
+                        </div>
+                        <div class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full inline-block mt-2">
+                            @point.Category?.Name
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <!-- Map -->
+    <div class="flex-1 bg-gray-200">
+        <div id="map" class="w-full h-full"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Configuration["GoogleMaps:ApiKey"]&callback=initMap" async defer></script>
+    <script>
+        let map, infoWindow;
+        let markers = [];
+        let allPoints = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
+        let cities = [];
+        
+        function initMap() {
+            // Initialize map
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 39.0, lng: 35.0 },
+                zoom: 6,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: true,
+                zoomControl: true,
+                styles: [
+                    {
+                        featureType: 'poi',
+                        elementType: 'labels',
+                        stylers: [{ visibility: 'off' }]
+                    }
+                ]
+            });
+            
+            infoWindow = new google.maps.InfoWindow({
+                maxWidth: 320
+            });
+            
+            // Load markers
+            loadMarkers(allPoints);
+            
+            // Load cities
+            loadCities();
+            
+            // Event listeners
+            document.getElementById('searchButton').addEventListener('click', function() {
+                const searchTerm = document.getElementById('searchInput').value.trim();
+                filterPoints();
+            });
+            
+            document.getElementById('searchInput').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    filterPoints();
+                }
+            });
+            
+            document.getElementById('applyFiltersBtn').addEventListener('click', filterPoints);
+            document.getElementById('clearFiltersBtn').addEventListener('click', clearFilters);
+            
+            document.getElementById('cityFilter').addEventListener('change', function() {
+                loadDistricts(this.value);
+            });
+            
+            // Result item click
+            document.querySelectorAll('.result-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const lat = parseFloat(this.dataset.lat);
+                    const lng = parseFloat(this.dataset.lng);
+                    const id = parseInt(this.dataset.id);
+                    
+                    map.setCenter({ lat, lng });
+                    map.setZoom(15);
+                    
+                    // Find and click the marker
+                    const marker = markers.find(m => m.id === id);
+                    if (marker) {
+                        google.maps.event.trigger(marker, 'click');
+                    }
+                });
+            });
+        }
+        
+        function loadMarkers(points) {
+            // Clear existing markers
+            clearMarkers();
+            
+            // Add new markers
+            points.forEach(point => {
+                const marker = new google.maps.Marker({
+                    position: { lat: point.Latitude, lng: point.Longitude },
+                    map: map,
+                    title: point.Name,
+                    id: point.Id,
+                    animation: google.maps.Animation.DROP
+                });
+                
+                marker.addListener('click', () => {
+                    showInfoWindow(marker, point);
+                });
+                
+                markers.push(marker);
+            });
+            
+            // Update results count
+            document.getElementById('resultsCount').textContent = points.length;
+            
+            // Update results list
+            updateResultsList(points);
+            
+            // Fit map to markers if there are any
+            if (markers.length > 0) {
+                fitMapToMarkers();
+            }
+        }
+        
+        function showInfoWindow(marker, point) {
+            // Close any open info window
+            infoWindow.close();
+            
+            const content = `
+                <div class="p-1">
+                    <h3 class="text-lg font-bold mb-2">${point.Name}</h3>
+                    <p class="mb-2">${point.Description}</p>
+                    <div class="mb-2">
+                        <strong>Adres:</strong> ${point.Address}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Şehir/İlçe:</strong> ${point.City}, ${point.District}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Kategori:</strong> ${point.Category ? point.Category.Name : ''}
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="${point.Website}" target="_blank" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                            <i class="fas fa-globe mr-1"></i> Web Sitesi
+                        </a>
+                        <a href="https://www.google.com/maps/search/?api=1&query=${point.Latitude},${point.Longitude}" target="_blank" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                            <i class="fas fa-map-marked-alt mr-1"></i> Yol Tarifi
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            infoWindow.setContent(content);
+            infoWindow.open(map, marker);
+            
+            // Animate marker
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => {
+                marker.setAnimation(null);
+            }, 750);
+        }
+        
+        function clearMarkers() {
+            markers.forEach(marker => {
+                marker.setMap(null);
+            });
+            markers = [];
+        }
+        
+        function fitMapToMarkers() {
+            const bounds = new google.maps.LatLngBounds();
+            markers.forEach(marker => {
+                bounds.extend(marker.getPosition());
+            });
+            map.fitBounds(bounds);
+            
+            // Don't zoom in too far
+            const listener = google.maps.event.addListener(map, "idle", function() { 
+                if (map.getZoom() > 15) map.setZoom(15); 
+                google.maps.event.removeListener(listener); 
+            });
+        }
+        
+        function loadCities() {
+            const citySelect = document.getElementById('cityFilter');
+            
+            // Get unique cities
+            cities = [...new Set(allPoints.map(p => p.City))].sort();
+            
+            // Add cities to select
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        }
+        
+        function loadDistricts(city) {
+            const districtSelect = document.getElementById('districtFilter');
+            
+            // Clear existing options except the first one
+            while (districtSelect.options.length > 1) {
+                districtSelect.remove(1);
+            }
+            
+            if (!city) return;
+            
+            // Get districts for the selected city
+            const districts = [...new Set(allPoints
+                .filter(p => p.City === city)
+                .map(p => p.District))]
+                .sort();
+            
+            // Add districts to select
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        }
+        
+        function filterPoints() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const categoryId = parseInt(document.getElementById('categoryFilter').value) || 0;
+            const city = document.getElementById('cityFilter').value;
+            const district = document.getElementById('districtFilter').value;
+            
+            let filteredPoints = [...allPoints];
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredPoints = filteredPoints.filter(p => 
+                    p.Name.toLowerCase().includes(searchTerm) ||
+                    p.Description.toLowerCase().includes(searchTerm) ||
+                    p.Address.toLowerCase().includes(searchTerm) ||
+                    p.City.toLowerCase().includes(searchTerm) ||
+                    p.District.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply category filter
+            if (categoryId > 0) {
+                filteredPoints = filteredPoints.filter(p => p.CategoryId === categoryId);
+            }
+            
+            // Apply city filter
+            if (city) {
+                filteredPoints = filteredPoints.filter(p => p.City === city);
+            }
+            
+            // Apply district filter
+            if (district) {
+                filteredPoints = filteredPoints.filter(p => p.District === district);
+            }
+            
+            // Update markers and results
+            loadMarkers(filteredPoints);
+        }
+        
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('cityFilter').value = '';
+            document.getElementById('districtFilter').value = '';
+            
+            // Reset to all points
+            loadMarkers(allPoints);
+            
+            // Reset map view
+            map.setCenter({ lat: 39.0, lng: 35.0 });
+            map.setZoom(6);
+        }
+        
+        function updateResultsList(points) {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+            
+            points.forEach(point => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item bg-gray-50 p-3 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors';
+                resultItem.dataset.id = point.Id;
+                resultItem.dataset.lat = point.Latitude;
+                resultItem.dataset.lng = point.Longitude;
+                
+                resultItem.innerHTML = `
+                    <h3 class="font-medium text-gray-800">${point.Name}</h3>
+                    <div class="flex items-center text-sm text-gray-500 mt-1">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        <span>${point.City}, ${point.District}</span>
+                    </div>
+                    <div class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full inline-block mt-2">
+                        ${point.Category ? point.Category.Name : ''}
+                    </div>
+                `;
+                
+                resultItem.addEventListener('click', function() {
+                    const lat = parseFloat(this.dataset.lat);
+                    const lng = parseFloat(this.dataset.lng);
+                    const id = parseInt(this.dataset.id);
+                    
+                    map.setCenter({ lat, lng });
+                    map.setZoom(15);
+                    
+                    // Find and click the marker
+                    const marker = markers.find(m => m.id === id);
+                    if (marker) {
+                        google.maps.event.trigger(marker, 'click');
+                    }
+                });
+                
+                resultsList.appendChild(resultItem);
+            });
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        /* Custom styles for the map page */
+        .result-item.active {
+            background-color: #e0f2fe;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        /* Google Maps info window styling */
+        .gm-style .gm-style-iw-c {
+            padding: 12px !important;
+        }
+    </style>
+} 

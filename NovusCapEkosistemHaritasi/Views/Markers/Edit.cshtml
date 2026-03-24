@@ -1,0 +1,18 @@
+@model NovusCapEkosistemHaritasi.Models.MarkerModel
+
+@{
+    ViewData["Title"] = "Düzenle";
+}
+
+<script>
+    @if (Model != null && Model.Id > 0) {
+        @:window.location.href = '/EcosystemPoints/Edit/@Model.Id';
+    } else {
+        @:window.location.href = '/EcosystemPoints/Index';
+    }
+</script>
+
+<div class="container mt-4">
+    <h1>Yönlendiriliyor...</h1>
+    <p>Sayfaya yönlendiriliyorsunuz. Lütfen bekleyin...</p>
+</div> 

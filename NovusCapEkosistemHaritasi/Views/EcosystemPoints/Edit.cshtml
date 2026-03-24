@@ -1,0 +1,150 @@
+@model NovusCapEkosistemHaritasi.Models.EcosystemPoint
+@{
+    ViewData["Title"] = "Ekosistem Noktasını Düzenle";
+}
+
+<div class="bg-white py-8">
+    <div class="container mx-auto px-4">
+        <nav class="flex mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="@Url.Action("Index", "Home")" class="text-gray-700 hover:text-blue-600">
+                        <i class="fas fa-home mr-2"></i> Ana Sayfa
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <a href="@Url.Action("Index", "EcosystemPoints")" class="text-gray-700 hover:text-blue-600">
+                            Ekosistem Noktaları
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-gray-500">Düzenle</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+        
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-gray-800 mb-6">Ekosistem Noktasını Düzenle</h1>
+                    
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-red-600 mb-4 p-4 bg-red-50 rounded-lg"></div>
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label asp-for="Name" class="block text-sm font-medium text-gray-700 mb-1">İsim</label>
+                                <input asp-for="Name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="Name" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="CategoryId" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Kategori Seçin</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label asp-for="Description" class="block text-sm font-medium text-gray-700 mb-1">Açıklama</label>
+                                <textarea asp-for="Description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                <span asp-validation-for="Description" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="Website" class="block text-sm font-medium text-gray-700 mb-1">Web Sitesi</label>
+                                <input asp-for="Website" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="Website" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="Icon" class="block text-sm font-medium text-gray-700 mb-1">İkon (Font Awesome sınıfı)</label>
+                                <input asp-for="Icon" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="fas fa-building">
+                                <span asp-validation-for="Icon" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div class="md:col-span-2">
+                                <label asp-for="Address" class="block text-sm font-medium text-gray-700 mb-1">Adres</label>
+                                <input asp-for="Address" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="Address" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="City" class="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
+                                <input asp-for="City" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="City" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="District" class="block text-sm font-medium text-gray-700 mb-1">İlçe</label>
+                                <input asp-for="District" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="District" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="Latitude" class="block text-sm font-medium text-gray-700 mb-1">Enlem</label>
+                                <input asp-for="Latitude" type="number" step="0.000001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="Latitude" class="text-sm text-red-600"></span>
+                            </div>
+                            
+                            <div>
+                                <label asp-for="Longitude" class="block text-sm font-medium text-gray-700 mb-1">Boylam</label>
+                                <input asp-for="Longitude" type="number" step="0.000001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <span asp-validation-for="Longitude" class="text-sm text-red-600"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 flex space-x-4">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-save mr-2"></i> Kaydet
+                            </button>
+                            <a href="@Url.Action("Index")" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg inline-flex items-center transition-colors">
+                                <i class="fas fa-times mr-2"></i> İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="mt-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-yellow-500 text-xl"></i>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-lg font-medium">Konum Bilgisi</h3>
+                        <p class="mt-1">Enlem ve boylam değerlerini Google Maps'ten kontrol edebilirsiniz. Haritada istediğiniz konuma sağ tıklayıp "Bu konumun bilgilerini görüntüle" seçeneğini kullanabilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const isValid = validateForm(form);
+                    if (!isValid) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+} 
